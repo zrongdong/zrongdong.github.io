@@ -9,6 +9,26 @@
 [User Manual 👉](_doc/Manual.md)
 --------------------------------------------------
 
+
+### Getting Started
+1. 你需要下载docker镜像
+```
+docker pull jekyll/jekyll
+```
+
+2. 你需要加载依赖
+```
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll yarn install
+```
+
+3. 你需要运行起来
+```
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll npm start
+```
+
+完成
+
+
 ### Getting Started
 
 1. You will need [Ruby](https://www.ruby-lang.org/en/) and [Bundler](https://bundler.io/) to use [Jekyll](https://jekyllrb.com/). Following [Using Jekyll with Bundler](https://jekyllrb.com/tutorials/using-jekyll-with-bundler/) to fullfill the enviromental requirement.
