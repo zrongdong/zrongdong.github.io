@@ -13,17 +13,17 @@
 ### Getting Started
 1. 你需要下载docker镜像
 ```
-docker pull jekyll/jekyll
+docker pull jekyll/jekyll:4.2.0
 ```
 
 2. 你需要加载依赖
 ```
-docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll yarn install
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 yarn install
 ```
 
 3. 你需要运行起来
 ```
-docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll npm start
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 npm start
 ```
 
 完成
