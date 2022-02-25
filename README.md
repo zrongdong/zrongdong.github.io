@@ -10,7 +10,7 @@
 --------------------------------------------------
 
 
-### Getting Started
+### 启动说明(Docker)
 1. 你需要下载docker镜像
 ```
 docker pull jekyll/jekyll:4.2.0
@@ -18,13 +18,19 @@ docker pull jekyll/jekyll:4.2.0
 
 2. 你需要加载依赖
 ```
-docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 yarn install
+docker run --rm -v $(pwd):/srv/jekyll -it -p 4000:4000 jekyll/jekyll:4.2.0 yarn install
 ```
 
 3. 你需要运行起来
 ```
-docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 npm start
+docker run --rm -v $(pwd):/srv/jekyll -it -p 4000:4000 jekyll/jekyll:4.2.0 yarn start
 ```
+
+如果你只需要构建(`_site文件夹`)。
+```
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 yarn build
+```
+
 
 完成
 
