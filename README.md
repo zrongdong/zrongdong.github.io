@@ -16,7 +16,7 @@ docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 ccr.ccs.tencentyun.com/zro
 
 4. 构建并推送到腾讯COS
 ```
-docker run --rm -v $(pwd):/srv/jekyll -it ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos sh -c "jekyll b && coscli cp ./_site/ cos://blog-1256312020/ -r --thread-num=10"
+docker run --rm -v $(pwd):/srv/jekyll -it ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos sh -c "jekyll b && coscli sync ./_site/ cos://blog-1256312020/ -r --thread-num=10"
 ```
 
 
