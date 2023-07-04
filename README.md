@@ -1,89 +1,28 @@
-[Hux Blog](https://huangxuan.me)
-================================
-
-> I never expected this becomes popular.
-
-![](http://huangxuan.me/img/blog-desktop.jpg)
-
-
-[User Manual 👉](_doc/Manual.md)
---------------------------------------------------
-
-
 ### 启动说明(Docker)
 1. 你需要下载docker镜像
 ```
-docker pull jekyll/jekyll:4.2.0
+docker pull ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos
 ```
 
-2. 你需要加载依赖
+2. 你需要运行起来
 ```
-docker run --rm -v $(pwd):/srv/jekyll -it -p 4000:4000 jekyll/jekyll:4.2.0 yarn install
-```
-
-3. 你需要运行起来
-```
-docker run --rm -v $(pwd):/srv/jekyll -it -p 4000:4000 jekyll/jekyll:4.2.0 yarn start
+docker run --rm -v $(pwd):/srv/jekyll -it -p 4000:4000 ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos jekyll server
 ```
 
-如果你只需要构建(`_site文件夹`)。
+3. 如果你只需要构建(`_site文件夹`)。
 ```
-docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 jekyll/jekyll:4.2.0 yarn build
+docker run --rm -v $(pwd):/srv/jekyll -i -p 4000:4000 ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos jekyll build
 ```
+
+4. 构建并推送到腾讯COS
+```
+docker run --rm -v $(pwd):/srv/jekyll -it ccr.ccs.tencentyun.com/zrongdong/images:jekyll_cos sh -c "jekyll b && coscli cp ./_site/ cos://blog-1256312020/ -r --thread-num=10"
+```
+
 
 
 完成
 
 
-### Getting Started
+- [**Hexo**](https://github.com/Kaijun/hexo-theme-huxblog)
 
-1. You will need [Ruby](https://www.ruby-lang.org/en/) and [Bundler](https://bundler.io/) to use [Jekyll](https://jekyllrb.com/). Following [Using Jekyll with Bundler](https://jekyllrb.com/tutorials/using-jekyll-with-bundler/) to fullfill the enviromental requirement.
-
-2. Installed dependencies in the `Gemfile`:
-
-```sh
-$ bundle install 
-```
-
-3. Serve the website (`localhost:4000` by default):
-
-```sh
-$ bundle exec jekyll serve  # alternatively, npm start
-```
-
-### Development (Build From Source)
-
-To modify the theme, you will need [Grunt](https://gruntjs.com/). There are numbers of tasks you can find in the `Gruntfile.js`, includes minifing JavaScript, compiling `.less` to `.css`, adding banners to keep the Apache 2.0 license intact, watching for changes, etc. 
-
-Yes, they were inherited and are extremely old-fashioned. There is no modularization and transpilation, etc.
-
-Critical Jekyll-related code are located in `_include/` and `_layouts/`. Most of them are [Liquid](https://github.com/Shopify/liquid/wiki) templates.
-
-This theme uses the default code syntax highlighter of jekyll, [Rouge](http://rouge.jneen.net/), which is compatible with Pygments theme so just pick any pygments theme css (e.g. from [here](http://jwarby.github.io/jekyll-pygments-themes/languages/javascript.html) and replace the content of `highlight.less`.
-
-
-### Interesting to know more? Checkout the [full user manual](_doc/Manual.md)!
-
-
-Other Resources
----------------
-
-Ports
-- [**Hexo**](https://github.com/Kaijun/hexo-theme-huxblog) by @kaijun
-- [**React-SSR**](https://github.com/LucasIcarus/huxpro.github.io/tree/ssr) by @LucasIcarus
-
-[Starter/Boilerplate](https://github.com/huxpro/huxblog-boilerplate)
-- Out of date. Helps wanted for updating it on par with the main repo
-
-Translation
-- [🇨🇳 (somewhat outdated)](https://github.com/Huxpro/huxpro.github.io/blob/master/_doc/README.zh.md)
-
-
-License
--------
-
-Apache License 2.0.
-Copyright (c) 2015-present Huxpro
-
-Hux Blog is derived from [Clean Blog Jekyll Theme (MIT License)](https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll/)
-Copyright (c) 2013-2016 Blackrock Digital LLC.
