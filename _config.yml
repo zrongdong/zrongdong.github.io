@@ -111,8 +111,8 @@ friends: [
 
 
 lsi: false
-safe: true
-source: /
+safe: false
+source: "./"
 incremental: false
 highlighter: rouge
 gist:
