@@ -5,16 +5,16 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <!-- SNS Link -->
                 {% include sns-links.html center=true %}
-
-               <!--  <p class="copyright text-muted">
-                    Copyright &copy; {{ site.title }} {{ site.time | date: '%Y' }}
+              <p class="copyright text-muted">
+                <a class="beian" href="http://beian.miit.gov.cn" target="_blank" style="display: none;">粤ICP备17090560号</a>
+                    <!-- Copyright &copy; {{ site.title }} {{ site.time | date: '%Y' }}
                     <br>
                     Powered by <a href="http://www.zrongdong.com">Hux Blog</a> |
                     <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
                         height="20px"
                         src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
-                    </iframe>
-                </p> -->
+                    </iframe> -->
+                </p>
             </div>
         </div>
     </div>
@@ -35,6 +35,17 @@
 
 
 <script src="{{ "/js/mermaid.min.js " | prepend: site.baseurl }}"></script>
+<script>
+    $(document).ready(function () {
+        var currentDomain = window.location.hostname;
+        if(
+            currentDomain.includes('127.0.0.1') ||
+            currentDomain.includes('zrongdong.com')
+            ){
+            document.getElementsByClassName("beian")[0].style.display = "block"
+        }
+    })
+</script>
 <script>
 var config = {
     startOnLoad:true,
