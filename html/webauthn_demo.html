@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAuthn 身份验证示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e1e1;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .fingerprint-icon {
+            text-align: center;
+            font-size: 48px;
+            margin: 20px 0;
+            color: #667eea;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: #666;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e1e1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .credential-list {
+            margin-top: 20px;
+        }
+
+        .credential-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .credential-item strong {
+            color: #333;
+        }
+
+        .credential-item small {
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .auth-methods {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .auth-methods h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .auth-methods ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .auth-methods li {
+            padding: 2px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 WebAuthn 多认证方式演示</h1>
+        
+        <div class="auth-methods">
+            <h4>🎯 支持的认证方式</h4>
+            <ul>
+                <li>🔐 平台认证器：指纹、Face ID、Windows Hello</li>
+                <li>🔑 跨平台认证器：USB密钥、NFC设备、蓝牙密钥</li>
+                <li>📱 混合传输：手机作为认证器</li>
+                <li>💻 内置认证器：设备内置的生物识别</li>
+            </ul>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" placeholder="请输入用户名" value="demo_user">
+        </div>
+        
+        <div class="form-group">
+            <label for="displayName">显示名称</label>
+            <input type="text" id="displayName" placeholder="请输入显示名称" value="演示用户">
+        </div>
+
+        <button class="btn btn-primary" id="registerBtn">
+            📱 注册新的认证器
+        </button>
+
+        <div class="divider">
+            <span>或者</span>
+        </div>
+
+        <button class="btn btn-secondary" id="authenticateBtn">
+            🔓 使用现有认证器登录
+        </button>
+
+        <div class="credential-list" id="credentialList"></div>
+
+        <div class="fingerprint-icon">
+            🔐
+        </div>
+    </div>
+
+    <script>
+        // 全局状态管理
+        const state = {
+            credentials: JSON.parse(localStorage.getItem('webauthn_credentials') || '[]'),
+            currentUser: null
+        };
+
+        // 工具函数
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function generateRandomId() {
+            return crypto.getRandomValues(new Uint8Array(32));
+        }
+
+        function generateChallenge() {
+            return crypto.getRandomValues(new Uint8Array(32));
+        }
+
+        // 保存凭据信息
+        function saveCredential(credentialInfo) {
+            state.credentials.push(credentialInfo);
+            localStorage.setItem('webauthn_credentials', JSON.stringify(state.credentials));
+            updateCredentialList();
+        }
+
+        // 更新凭据列表显示
+        function updateCredentialList() {
+            const listDiv = document.getElementById('credentialList');
+            if (state.credentials.length === 0) {
+                listDiv.innerHTML = '';
+                return;
+            }
+
+            listDiv.innerHTML = `
+                <h3>已注册的认证器</h3>
+                ${state.credentials.map(cred => `
+                    <div class="credential-item">
+                        <strong>${cred.username}</strong>
+                        <small>注册时间: ${new Date(cred.createdAt).toLocaleString()}</small>
+                        <small>认证器ID: ${cred.credentialId.substring(0, 20)}...</small>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // WebAuthn 注册功能
+        async function registerWebAuthn() {
+            const username = document.getElementById('username').value;
+            const displayName = document.getElementById('displayName').value;
+
+            if (!username || !displayName) {
+                showStatus('请填写用户名和显示名称', 'error');
+                return;
+            }
+
+            // 检查浏览器支持
+            if (!window.PublicKeyCredential) {
+                showStatus('您的浏览器不支持 WebAuthn', 'error');
+                return;
+            }
+
+            try {
+                showStatus('正在准备注册...', 'info');
+                
+                // 生成用户ID和挑战
+                const userId = generateRandomId();
+                const challenge = generateChallenge();
+
+                // 注册选项 - 移除 authenticatorAttachment 限制，支持所有认证器类型
+                const createCredentialOptions = {
+                    publicKey: {
+                        challenge: challenge,
+                        rp: {
+                            name: "WebAuthn Demo",
+                            id: window.location.hostname,
+                        },
+                        user: {
+                            id: userId,
+                            name: username,
+                            displayName: displayName,
+                        },
+                        pubKeyCredParams: [
+                            {
+                                type: "public-key",
+                                alg: -7 // ES256
+                            },
+                            {
+                                type: "public-key",
+                                alg: -257 // RS256
+                            }
+                        ],
+                        authenticatorSelection: {
+                            // 移除 authenticatorAttachment 限制，允许平台和跨平台认证器
+                            userVerification: "preferred",
+                            residentKey: "preferred"
+                        },
+                        timeout: 60000,
+                        attestation: "direct"
+                    }
+                };
+
+                showStatus('请使用您的认证器进行注册（支持指纹、Face ID、Windows Hello、USB密钥、手机等各种方式）', 'info');
+
+                // 创建凭据
+                const credential = await navigator.credentials.create(createCredentialOptions);
+
+                // 保存凭据信息
+                const credentialInfo = {
+                    username: username,
+                    displayName: displayName,
+                    credentialId: arrayBufferToBase64(credential.rawId),
+                    publicKey: arrayBufferToBase64(credential.response.publicKey),
+                    userId: arrayBufferToBase64(userId),
+                    challenge: arrayBufferToBase64(challenge),
+                    createdAt: new Date().toISOString()
+                };
+
+                saveCredential(credentialInfo);
+                showStatus(`🎉 注册成功！用户 "${displayName}" 的认证器已设置完成`, 'success');
+
+            } catch (error) {
+                console.error('注册失败:', error);
+                let errorMessage = '注册失败: ';
+                
+                if (error.name === 'NotSupportedError') {
+                    errorMessage += '您的设备不支持所需的认证方式';
+                } else if (error.name === 'SecurityError') {
+                    errorMessage += '安全错误，请确保在HTTPS环境下使用';
+                } else if (error.name === 'NotAllowedError') {
+                    errorMessage += '用户取消了认证操作';
+                } else if (error.name === 'AbortError') {
+                    errorMessage += '操作被中止';
+                } else {
+                    errorMessage += error.message || '未知错误';
+                }
+                
+                showStatus(errorMessage, 'error');
+            }
+        }
+
+        // WebAuthn 认证功能
+        async function authenticateWebAuthn() {
+            if (state.credentials.length === 0) {
+                showStatus('请先注册一个认证器', 'error');
+                return;
+            }
+
+            try {
+                showStatus('正在准备认证...', 'info');
+                
+                const challenge = generateChallenge();
+                
+                // 认证选项 - 添加 hybrid 传输方式
+                const getCredentialOptions = {
+                    publicKey: {
+                        challenge: challenge,
+                        timeout: 60000,
+                        rpId: window.location.hostname,
+                        allowCredentials: state.credentials.map(cred => ({
+                            type: 'public-key',
+                            id: base64ToArrayBuffer(cred.credentialId),
+                            transports: ['internal', 'usb', 'nfc', 'ble', 'hybrid'] // 添加 hybrid 传输
+                        })),
+                        userVerification: 'preferred'
+                    }
+                };
+
+                showStatus('请使用您的认证器进行身份验证（支持各种认证方式）', 'info');
+
+                // 获取凭据
+                const assertion = await navigator.credentials.get(getCredentialOptions);
+
+                // 验证签名（在实际应用中，这应该在服务器端完成）
+                const credentialId = arrayBufferToBase64(assertion.rawId);
+                const matchedCredential = state.credentials.find(cred => cred.credentialId === credentialId);
+
+                if (matchedCredential) {
+                    showStatus(`🎉 认证成功！欢迎回来，${matchedCredential.displayName}！`, 'success');
+                    state.currentUser = matchedCredential;
+                } else {
+                    showStatus('认证失败：未找到匹配的凭据', 'error');
+                }
+
+            } catch (error) {
+                console.error('认证失败:', error);
+                let errorMessage = '认证失败: ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += '用户取消了认证操作';
+                } else if (error.name === 'AbortError') {
+                    errorMessage += '操作被中止';
+                } else if (error.name === 'SecurityError') {
+                    errorMessage += '安全错误';
+                } else {
+                    errorMessage += error.message || '未知错误';
+                }
+                
+                showStatus(errorMessage, 'error');
+            }
+        }
+
+        // 检查平台支持
+        async function checkPlatformSupport() {
+            if (!window.PublicKeyCredential) {
+                showStatus('您的浏览器不支持 WebAuthn', 'error');
+                return;
+            }
+
+            try {
+                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                if (available) {
+                    showStatus('✅ 您的设备支持多种认证方式，包括平台认证器和跨平台认证器！', 'success');
+                } else {
+                    showStatus('✅ 您的设备支持跨平台认证器（如USB密钥、手机等）', 'info');
+                }
+            } catch (error) {
+                console.error('检查平台支持时出错:', error);
+            }
+        }
+
+        // 事件监听器
+        document.getElementById('registerBtn').addEventListener('click', registerWebAuthn);
+        document.getElementById('authenticateBtn').addEventListener('click', authenticateWebAuthn);
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCredentialList();
+            checkPlatformSupport();
+        });
+
+        // 添加清除数据的功能（仅用于演示）
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                localStorage.removeItem('webauthn_credentials');
+                state.credentials = [];
+                updateCredentialList();
+                showStatus('🗑️ 已清除所有凭据数据', 'info');
+            }
+        });
+    </script>
+</body>
+</html>
