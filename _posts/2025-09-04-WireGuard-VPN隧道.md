@@ -40,6 +40,7 @@ tags:
 
 ## 流程图
 
+
 个人电脑(mac) -> 服务器(centos 7.9) -> 公司电脑(win10) -> (NAT)公司内网
 
 ![](/img/2025-09-05/WireGuard流程图.png)
