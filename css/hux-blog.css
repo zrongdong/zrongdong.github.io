@@ -511,8 +511,11 @@ pre.highlight {
   color: #a6e22e;
 }
 .highlighter-rouge .highlight {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
   border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 .highlighter-rouge .highlight pre {
   font-size: 14px;
@@ -530,6 +533,7 @@ pre.highlight {
 }
 .highlighter-rouge .highlight .rouge-code pre {
   color: #abb2bf;
+  padding-left: 16px !important;
 }
 .highlighter-rouge .highlight .table-responsive {
   margin: 0px;
@@ -545,14 +549,20 @@ pre.highlight {
   padding: 0;
 }
 .highlighter-rouge .highlight table > tbody > tr > td > pre {
-  padding: 14px;
+  padding: 16px;
 }
 .highlighter-rouge .highlight td.rouge-gutter {
   width: 56px;
+  padding-right: 12px !important;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 .highlighter-rouge .highlight .lineno {
   text-align: right;
   border-radius: 0px;
+  color: #636d83;
+  user-select: none;
+  padding: 0 8px;
 }
 /* Landscape phones and down */
 @media (max-width: 480px) {
